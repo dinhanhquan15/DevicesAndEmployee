@@ -1,0 +1,2 @@
+Borrowing{borrowingId=BOR-001, TotalPrice=0.00, Employee=Nguyen Van A, Devices=0, CreatedAt=2025-04-08 15:38:56, UpdatedAt=2025-04-08 15:38:56, HandoverDate=N/A, EvictionDate=2025-04-08 15:38:56}
+Borrowing{borrowingId=BOR-002, TotalPrice=196.00, Employee=Nguyen Van A, Devices=3, CreatedAt=2025-04-08 15:38:56, UpdatedAt=2025-04-08 15:38:56, HandoverDate=2025-04-08 15:38:56, EvictionDate=N/A}

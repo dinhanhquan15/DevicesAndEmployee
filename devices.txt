@@ -1,0 +1,3 @@
+Device{ID=DEV-001, Type=Mouse, UnitPrice=50.00, RateType=NEW,NameDevice=Mouse A, OriginPrice=50.00, DateAudit=null}
+Device{ID=DEV-002, Type=Keyboard, UnitPrice=100.00, RateType=LIKE_NEW,NameDevice=KB B, OriginPrice=120.00, DateAudit=null}
+Device{ID=DEV-003, Type=Display, UnitPrice=300.00, RateType=SECONDHAND,NameDevice=Display C, OriginPrice=400.00, DateAudit=null}
