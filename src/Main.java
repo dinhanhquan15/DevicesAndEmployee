@@ -1,6 +1,7 @@
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -43,8 +44,14 @@ public class Main {
             System.out.println("2. Thêm Device");
             System.out.println("3. Hiển thị danh sách Employee");
             System.out.println("4. Hiển thị danh sách Device");
-            System.out.println("5. Thoát");
-            System.out.print("Chọn chức năng (1-5): ");
+            System.out.println("5. Sắp xếp thiết bị theo giá");
+            System.out.println("6. Sắp xếp khoản mượn theo giá");
+            System.out.println("7. Tổng thiết bị và tổng số tiền mượn");
+            System.out.println("8. HTổng giá thiết bị và tổng giá khoản mượn");
+            System.out.println("9. Liệt kê 5 khoản mượn trong 15 ngày trước");
+            System.out.println("10. Xóa thiết bị khỏi khoản mượn và thêm vào khoản mượn khác");
+            System.out.println("11. Thoát chung trình");
+            System.out.print("Chọn chức năng (1-11): ");
 
             int choice;
             try {
@@ -159,6 +166,67 @@ public class Main {
                     break;
 
                 case 5:
+                    System.out.println("\n Danh sách Device sắp xếp theo giá:" );
+                    List<Device> sortedByPrice = dm.sortDevicesByPrice();
+                    if (sortedByPrice.isEmpty()) {
+                        System.out.println("Chưa có thiết bị nào!");
+                    } else {
+                        sortedByPrice.forEach(System.out::println);
+                    }
+                    break;
+
+                case 6:
+                    System.out.println("\n Danh sách khoản mượn theo giá: ");
+                    List<Borrowing> sortedBorrowingsByPrice = dm.sortBorrowingsByPrice();
+                    if (sortedBorrowingsByPrice.isEmpty()) {
+                        System.out.println("Chưa có đơn mượn nào!");
+                    } else {
+                        sortedBorrowingsByPrice.forEach(System.out::println);
+                    }
+                    break;
+
+                case 7:
+                    System.out.println("Tổng số thiết bị: " + dm.viewEmployees().size());
+                    System.out.println("Tổng số tiền mượn thiết bị: " + dm.viewBorrowings().stream().mapToDouble(Borrowing::getTotalPrice).sum());
+                    break;
+
+                case 8:
+                    System.out.println("Tổng giá của thiết bị: " + dm.viewDevices().stream().mapToDouble(Device::getUntiPrice).sum());
+                    System.out.println("Tổng giá của khoản mượn: " + dm.viewBorrowings().stream().mapToDouble(Borrowing::getTotalPrice).sum());
+
+                case 9:
+                    System.out.println("\n khoản mượn trong 15 ngày trước: ");
+                    LocalDateTime fifteenDaysAgo = LocalDateTime.now().minusDays(15);
+                    List<Borrowing> recentBorrowings = dm.viewBorrowings().stream()
+                            .filter(b ->b.getDateAudit().getHandoverDate() != null && b.getDateAudit().getHandoverDate().isAfter(fifteenDaysAgo))
+                            .limit(5)
+                            .collect(Collectors.toList());
+                    if (recentBorrowings.isEmpty()) {
+                        System.out.println("Không có khoản mượng nào trong 15 ngày! ");
+                    } else {
+                        recentBorrowings.forEach(System.out::println);
+                    }
+                    break;
+
+                case 10:
+                    System.out.println("Nhập Borrowing ID hiện tại (BOR-XXX): ");
+                    String currentBorrowingId = cs.nextLine();
+
+                    System.out.println("Nhập ID thiết bị cần xóa(DEV-XXX): ");
+                    String deleteDevice = cs.nextLine();
+
+                    System.out.println("Nhập ID khoản mượn mới (BOR-XXX): ");
+                    String newBorrowingId = cs.nextLine();
+
+                    try{
+                        dm.evictAndMoveDevice(currentBorrowingId, deleteDevice, newBorrowingId);
+                        System.out.println("Đã xóa thiết bị mã " + deleteDevice + " khỏi " + currentBorrowingId + " và thêm vào "+ newBorrowingId);
+                    } catch (Exception e) {
+                        System.out.println("Lỗi: " + e.getMessage());
+                    }
+                    break;
+
+                case 11:
                     System.out.println("Kết thúc chương trình !");
                     cs.close();
                     return;
