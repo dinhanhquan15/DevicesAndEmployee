@@ -1,26 +1,29 @@
 import java.io.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataManager {
     private static DataManager instance;
-    private static List<Device> devices = new ArrayList<>();
-    private static List<Employee> employees = new ArrayList<>();
-    private static List<Borrowing> borrowings = new ArrayList<>();
+    private List<Device> devices = new ArrayList<>();
+    private List<Employee> employees = new ArrayList<>();
+    private List<Borrowing> borrowings = new ArrayList<>();
 
     private DataManager() {
         initSampleData();
     }
+
     public static DataManager getInstance() {
         if (instance == null) {
             instance = new DataManager();
         }
         return instance;
     }
+
     private void initSampleData() {
         employees.add(new Employee("EMP-001", "Nguyen Van A", "Hanoi", "0123456789", 1000.0));
-        employees.add(new Employee("EMP-002", "Nguyen Van B", "Sài Gòn", "0987654321", 2000.0));
+        employees.add(new Employee("EMP-002", "Tran Thi B", "HCM", "0987654321", 2000.0));
 
         devices.add(new Device("DEV-001", "Mouse", 50.0, RateType.NEW, "Branch1", "Mouse A", "1.0", 50.0));
         devices.add(new Device("DEV-002", "Keyboard", 100.0, RateType.LIKE_NEW, "Branch2", "KB B", "2.0", 120.0));
@@ -28,20 +31,40 @@ public class DataManager {
         List<Device> borrowingDevices = new ArrayList<>();
         borrowingDevices.add(devices.get(0));
         borrowings.add(new Borrowing("BOR-001", employees.get(0), borrowingDevices));
-
     }
-    public void createDevices(Device device) {
-        if(devices.stream().anyMatch(d -> d.getIdDevice().equals(device.getIdDevice()))) {
-            throw new IllegalArgumentException("ID thiết bị đã tồn tại!");
+
+    // Thêm Employee
+    public void createEmployee(Employee employee) {
+        if (employee == null) {
+            throw new IllegalArgumentException("Employee cannot be null!");
+        }
+        if (employees.stream().anyMatch(e -> e.getIdEmployee().equals(employee.getIdEmployee()))) {
+            throw new IllegalArgumentException("Employee ID " + employee.getIdEmployee() + " already exists!");
+        }
+        employees.add(employee);
+        saveToFile("employees.txt", employees);
+    }
+
+    // Hiển thị danh sách Employee
+    public List<Employee> viewEmployees() {
+        return new ArrayList<>(employees);
+    }
+
+    public void createDevice(Device device) {
+        if (device == null) {
+            throw new IllegalArgumentException("Device cannot be null!");
+        }
+        if (devices.stream().anyMatch(d -> d.getIdDevice().equals(device.getIdDevice()))) {
+            throw new IllegalArgumentException("Device ID " + device.getIdDevice() + " already exists!");
         }
         devices.add(device);
-        saveToFile("devices.txt",devices);
+        saveToFile("devices.txt", devices);
     }
 
     public List<Device> viewDevices() { return new ArrayList<>(devices); }
 
-    public void editDevice(String IdDevice, Device updatedDevice) {
-        Device device = devices.stream().filter(d -> d.getIdDevice().equals(IdDevice)).findFirst().orElse(null);
+    public void editDevice(String deviceId, Device updatedDevice) {
+        Device device = devices.stream().filter(d -> d.getIdDevice().equals(deviceId)).findFirst().orElse(null);
         if (device != null) {
             devices.remove(device);
             devices.add(updatedDevice);
@@ -86,14 +109,20 @@ public class DataManager {
 
     public List<Borrowing> viewBorrowings() { return new ArrayList<>(borrowings); }
 
-    public void deleteBorrowing(String idBorrowing) {
-        borrowings.removeIf(b -> b.getIdBorrowing().equals(idBorrowing));
+    public void deleteBorrowing(String borrowingId) {
+        borrowings.removeIf(b -> b.getIdBorrowing().equals(borrowingId));
         saveToFile("borrowings.txt", borrowings);
     }
 
     public List<Borrowing> sortBorrowingsByPrice() {
         return borrowings.stream()
                 .sorted(Comparator.comparingDouble(Borrowing::getTotalPrice))
+                .collect(Collectors.toList());
+    }
+
+    public List<Borrowing> sortBorrowingsByHandoverDate() {
+        return borrowings.stream()
+                .sorted(Comparator.comparing(b -> b.getDateAudit().getHandoverDate(), Comparator.nullsLast(Comparator.naturalOrder())))
                 .collect(Collectors.toList());
     }
 
