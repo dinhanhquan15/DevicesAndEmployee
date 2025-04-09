@@ -1,0 +1,3 @@
+Employee{ID=EMP-001, FullName=Nguyen Van A, Phone=0123456789, Balance=1000.00}
+Employee{ID=EMP-002, FullName=Tran Thi B, Phone=0987654321, Balance=2000.00}
+Employee{ID=001B, FullName=Đinh Anh Quân, Phone=0987654321, Balance=200000.00}
