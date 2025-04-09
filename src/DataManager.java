@@ -12,6 +12,7 @@ public class DataManager {
 
     private DataManager() {
         initSampleData();
+        loadDataFromFiles();
     }
 
     public static DataManager getInstance() {
@@ -19,6 +20,17 @@ public class DataManager {
             instance = new DataManager();
         }
         return instance;
+    }
+
+    public void loadDataFromFiles() {
+        loadEmployeesFromFile("employees.txt");
+        loadDeviceFromFile("devices.tst");
+        loadBorrowingFromFile("borrowings.txt");
+
+        if(employees.isEmpty() && devices.isEmpty() && borrowings.isEmpty()) {
+            initSampleData();
+            saveAllToFiles();
+        }
     }
 
     private void initSampleData() {
@@ -33,7 +45,78 @@ public class DataManager {
         borrowings.add(new Borrowing("BOR-001", employees.get(0), borrowingDevices));
     }
 
-    // Thêm Employee
+    public void saveAllToFiles() {
+        saveToFile("employees.txt", employees);
+        saveToFile("devices.txt", devices);
+        saveToFile("borrowings.txt", borrowings);
+    }
+
+    private void loadEmployeesFromFile(String filename) {
+        try(BufferedReader rD = new BufferedReader(new FileReader(filename))){
+            String line;
+            while ((line = rD.readLine()) != null){
+                String[] parts = line.split(",");
+                    if (parts.length >= 5) {
+                        String employeeId = parts[0].split("=")[1];
+                        String fullName = parts[1].split("=")[1];
+                        String address = parts[2].split("=")[1];
+                        String phoneNumber = parts[3].split("=")[1];
+                        double accountBalance = Double.parseDouble(parts[4].split("=")[1].replace("}", ""));
+                        employees.add(new Employee(employeeId, fullName, address, phoneNumber, accountBalance));
+                    }
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            System.out.println("Không tìm thấy file " + filename + ", sẽ dùng dữ liệu mặc định.");
+        }
+    }
+
+    private void loadDeviceFromFile(String filename) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(", ");
+                if (parts.length >= 7) {
+                    String deviceId = parts[0].split("=")[1];
+                    String type = parts[1].split("=")[1];
+                    double unitPrice = Double.parseDouble(parts[2].split("=")[1]);
+                    RateType rateType = RateType.valueOf(parts[3].split("=")[1]);
+                    String itemName = parts[4].split("=")[1];
+                    double originPrice = Double.parseDouble(parts[5].split("=")[1]);
+                    // DateAudit sẽ được khởi tạo mặc định
+                    Device device = new Device(deviceId, type, unitPrice, rateType, "BranchDefault", itemName, "1.0", originPrice);
+                    devices.add(device);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Không tìm thấy file " + filename + ", sẽ dùng dữ liệu mặc định.");
+        }
+    }
+
+    private void loadBorrowingFromFile(String filename) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(", ");
+                if (parts.length >= 4) {
+                    String borrowingId = parts[0].split("=")[1];
+                    double totalPrice = Double.parseDouble(parts[1].split("=")[1]);
+                    String employeeName = parts[2].split("=")[1];
+                    int deviceCount = Integer.parseInt(parts[3].split("=")[1]);
+                    Employee employee = employees.stream()
+                            .filter(e -> e.getFullName().equals(employeeName))
+                            .findFirst()
+                            .orElse(employees.get(0));
+                    List<Device> borrowingDevices = new ArrayList<>();
+                    borrowings.add(new Borrowing(borrowingId, employee, borrowingDevices));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Không tìm thấy file " + filename + ", sẽ dùng dữ liệu mặc định.");
+        }
+    }
+
     public void createEmployee(Employee employee) {
         if (employee == null) {
             throw new IllegalArgumentException("Employee cannot be null!");
@@ -45,7 +128,7 @@ public class DataManager {
         saveToFile("employees.txt", employees);
     }
 
-    // Hiển thị danh sách Employee
+
     public List<Employee> viewEmployees() {
         return new ArrayList<>(employees);
     }

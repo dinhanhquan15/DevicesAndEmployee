@@ -8,36 +8,6 @@ public class Main {
         DataManager dm = DataManager.getInstance();
         Scanner cs = new Scanner(System.in);
 
-
-        Device newDevice = new Device("DEV-003", "Display", 300.0, RateType.SECONDHAND, "Branch3", "Display C", "1.1", 400.0);
-        dm.createDevice(newDevice);
-        System.out.println("Tất cả các thiết bị:");
-        dm.viewDevices().forEach(System.out::println);
-
-        System.out.println("\nThiết bị được sắp xếp theo giá:");
-        dm.sortDevicesByPrice().forEach(System.out::println);
-
-        System.out.println("\nTìm kiếm thiết bị theo loại 'Mouse':");
-        dm.searchDevices(null, "Mouse", null, null).forEach(System.out::println);
-
-
-        List<Device> devicesForBorrowing = dm.viewDevices().subList(0, 2);
-        Borrowing newBorrowing = new Borrowing("BOR-002", dm.viewBorrowings().get(0).getEmployee(), devicesForBorrowing);
-        newBorrowing.getDateAudit().setHandoverDate(LocalDateTime.now());
-        dm.createBorrowing(newBorrowing);
-
-        System.out.println("\nTất cả các khoản vay:");
-        dm.viewBorrowings().forEach(System.out::println);
-
-        System.out.println("\nCác khoản vay được sắp xếp theo giá:");
-        dm.sortBorrowingsByPrice().forEach(System.out::println);
-
-        dm.exportReport();
-
-        dm.evictAndMoveDevice("BOR-001", "DEV-001", "BOR-002");
-        System.out.println("\nSau khi di chuyển thiết bị:");
-        dm.viewBorrowings().forEach(System.out::println);
-
         while (true) {
             System.out.println("\n=== MENU ===");
             System.out.println("1. Thêm Employee");
@@ -46,11 +16,12 @@ public class Main {
             System.out.println("4. Hiển thị danh sách Device");
             System.out.println("5. Sắp xếp thiết bị theo giá");
             System.out.println("6. Sắp xếp khoản mượn theo giá");
-            System.out.println("7. Tổng thiết bị và tổng số tiền mượn");
-            System.out.println("8. HTổng giá thiết bị và tổng giá khoản mượn");
-            System.out.println("9. Liệt kê 5 khoản mượn trong 15 ngày trước");
-            System.out.println("10. Xóa thiết bị khỏi khoản mượn và thêm vào khoản mượn khác");
-            System.out.println("11. Thoát chung trình");
+            System.out.println("7. Hiển thị danh sách Employee");
+            System.out.println("8. Tổng thiết bị và tổng số tiền mượn");
+            System.out.println("9. HTổng giá thiết bị và tổng giá khoản mượn");
+            System.out.println("10. Liệt kê 5 khoản mượn trong 15 ngày trước");
+            System.out.println("11. Xóa thiết bị khỏi khoản mượn và thêm vào khoản mượn khác");
+            System.out.println("12. Thoát chung trình");
             System.out.print("Chọn chức năng (1-11): ");
 
             int choice;
@@ -186,15 +157,25 @@ public class Main {
                     break;
 
                 case 7:
+                    System.out.println("\n danh sách dơn mượn: ");
+                    List<Borrowing> borrowingroes = dm.viewBorrowings();
+                    if (borrowingroes.isEmpty()) {
+                        System.out.println("Chưa có Device nào!");
+                    } else {
+                        borrowingroes.forEach(System.out::println);
+                    }
+                    break;
+
+                case 8:
                     System.out.println("Tổng số thiết bị: " + dm.viewEmployees().size());
                     System.out.println("Tổng số tiền mượn thiết bị: " + dm.viewBorrowings().stream().mapToDouble(Borrowing::getTotalPrice).sum());
                     break;
 
-                case 8:
+                case 9:
                     System.out.println("Tổng giá của thiết bị: " + dm.viewDevices().stream().mapToDouble(Device::getUntiPrice).sum());
                     System.out.println("Tổng giá của khoản mượn: " + dm.viewBorrowings().stream().mapToDouble(Borrowing::getTotalPrice).sum());
 
-                case 9:
+                case 10:
                     System.out.println("\n khoản mượn trong 15 ngày trước: ");
                     LocalDateTime fifteenDaysAgo = LocalDateTime.now().minusDays(15);
                     List<Borrowing> recentBorrowings = dm.viewBorrowings().stream()
@@ -208,7 +189,7 @@ public class Main {
                     }
                     break;
 
-                case 10:
+                case 11:
                     System.out.println("Nhập Borrowing ID hiện tại (BOR-XXX): ");
                     String currentBorrowingId = cs.nextLine();
 
@@ -226,7 +207,7 @@ public class Main {
                     }
                     break;
 
-                case 11:
+                case 12:
                     System.out.println("Kết thúc chương trình !");
                     cs.close();
                     return;
