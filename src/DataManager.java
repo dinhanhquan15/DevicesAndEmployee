@@ -214,6 +214,26 @@ public class DataManager {
         }
     }
 
+    public void exportReport() {
+        try (PrintWriter writer = new PrintWriter("report.txt")) {
+            writer.println("Total Devices: " + devices.size());
+            writer.println("Total Borrowings: " + borrowings.size());
+            writer.println("Total Device Price: " + devices.stream().mapToDouble(Device::getUntiPrice).sum());
+            writer.println("Total Borrowing Price: " + borrowings.stream().mapToDouble(Borrowing::getTotalPrice).sum());
+
+            writer.println("\n5 Borrowings from 15 days ago:");
+            LocalDateTime fifteenDaysAgo = LocalDateTime.now().minusDays(15);
+            borrowings.stream()
+                    .filter(b -> b.getDateAudit().getHandoverDate() != null && b.getDateAudit().getHandoverDate().isAfter(fifteenDaysAgo))
+                    .limit(5)
+                    .forEach(b -> writer.println(b));
+
+            System.out.println("Report exported to report.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private <T> void saveToFile(String filename, List<T> data) {
         try (PrintWriter writer = new PrintWriter(filename)) {
             data.forEach(writer::println);

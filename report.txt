@@ -1,7 +1,6 @@
-Total Devices: 3
-Total Borrowings: 2
-Total Device Price: 450.0
-Total Borrowing Price: 196.0
+Total Devices: 2
+Total Borrowings: 3
+Total Device Price: 150.0
+Total Borrowing Price: 50.0
 
 5 Borrowings from 15 days ago:
-Borrowing{borrowingId=BOR-002, TotalPrice=146.00, Employee=Nguyen Van A, Devices=2, CreatedAt=2025-04-09 11:39:54, UpdatedAt=2025-04-09 11:39:54, HandoverDate=2025-04-09 11:39:54, EvictionDate=N/A}
