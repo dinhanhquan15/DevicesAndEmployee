@@ -1,6 +1,5 @@
 import java.io.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -164,13 +163,7 @@ public class DataManager {
     public List<Device> sortDevicesByPrice() {
         return devices.stream()
                 .sorted(Comparator.comparingDouble(Device::getUntiPrice))
-                .collect(Collectors.toList());
-    }
-
-    public List<Device> sortDevicesByCreatedAt() {
-        return devices.stream()
-                .sorted(Comparator.comparing(d -> d.getDateAudit().getCreatedAt()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Device> searchDevices(String keyword, String type, RateType rateType, LocalDateTime date) {
@@ -179,7 +172,7 @@ public class DataManager {
                         (type == null || d.getType().equals(type)) &&
                         (rateType == null || d.getRateType() == rateType) &&
                         (date == null || d.getDateAudit().getCreatedAt().toLocalDate().equals(date.toLocalDate())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void createBorrowing(Borrowing borrowing) {
@@ -192,21 +185,10 @@ public class DataManager {
 
     public List<Borrowing> viewBorrowings() { return new ArrayList<>(borrowings); }
 
-    public void deleteBorrowing(String borrowingId) {
-        borrowings.removeIf(b -> b.getIdBorrowing().equals(borrowingId));
-        saveToFile("borrowings.txt", borrowings);
-    }
-
     public List<Borrowing> sortBorrowingsByPrice() {
         return borrowings.stream()
                 .sorted(Comparator.comparingDouble(Borrowing::getTotalPrice))
-                .collect(Collectors.toList());
-    }
-
-    public List<Borrowing> sortBorrowingsByHandoverDate() {
-        return borrowings.stream()
-                .sorted(Comparator.comparing(b -> b.getDateAudit().getHandoverDate(), Comparator.nullsLast(Comparator.naturalOrder())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Borrowing> searchBorrowings(String keyword, LocalDateTime date, double price) {
@@ -214,28 +196,9 @@ public class DataManager {
                 .filter(b -> (keyword == null || b.getEmployee().getFullName().contains(keyword)) &&
                         (date == null || (b.getDateAudit().getHandoverDate() != null && b.getDateAudit().getHandoverDate().toLocalDate().equals(date.toLocalDate()))) &&
                         (price == 0 || b.getTotalPrice() == price))
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public void exportReport() {
-        try (PrintWriter writer = new PrintWriter("report.txt")) {
-            writer.println("Total Devices: " + devices.size());
-            writer.println("Total Borrowings: " + borrowings.size());
-            writer.println("Total Device Price: " + devices.stream().mapToDouble(Device::getUntiPrice).sum());
-            writer.println("Total Borrowing Price: " + borrowings.stream().mapToDouble(Borrowing::getTotalPrice).sum());
-
-            writer.println("\n5 Borrowings from 15 days ago:");
-            LocalDateTime fifteenDaysAgo = LocalDateTime.now().minusDays(15);
-            borrowings.stream()
-                    .filter(b -> b.getDateAudit().getHandoverDate() != null && b.getDateAudit().getHandoverDate().isAfter(fifteenDaysAgo))
-                    .limit(5)
-                    .forEach(b -> writer.println(b));
-
-            System.out.println("Report exported to report.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void evictAndMoveDevice(String borrowingId, String deviceId, String newBorrowingId) {
         Borrowing oldBorrowing = borrowings.stream().filter(b -> b.getIdBorrowing().equals(borrowingId)).findFirst().orElse(null);
