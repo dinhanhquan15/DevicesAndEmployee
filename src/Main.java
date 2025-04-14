@@ -9,7 +9,7 @@ public class Main {
         while (true) {
             displayMenu();
             int choice = getUserChoice();
-            if (choice == 12) {
+            if (choice == 11) {
                 System.out.println("Kết thúc chương trình");
                 sc.close();
                 return;
@@ -30,9 +30,8 @@ public class Main {
         System.out.println("8. Liệt kê 5 khoản mượn trong 15 ngày trước");
         System.out.println("9. Xóa thiết bị khỏi khoản mượn và thêm vào khoản mượn khác");
         System.out.println("10. Tìm kiếm theo tên");
-        System.out.println("11. Xuất file");
-        System.out.println("12. Thoát chương trình");
-        System.out.print("Chọn chức năng (1-12): ");
+        System.out.println("11. Thoát chương trình");
+        System.out.print("Chọn chức năng (1-11): ");
     }
     private static int getUserChoice() {
         try {
@@ -53,9 +52,7 @@ public class Main {
             case 7 -> totalPriceBorrowing();
             case 8 -> recentBorrowing();
             case 9 -> deleteBorrowing();
-            case 10 -> search();
-            case 11 -> exportFile();
-            case 12 -> {}
+            case 11 -> {}
             default ->  System.out.println("Lựa chọn không hợp lệ, vui lòng chọn lại!");
 
         }
@@ -262,9 +259,5 @@ public class Main {
         } else {
             System.out.println("Loại tìm kiếm không hợp lệ!");
         }
-    }
-
-    private static void exportFile(){
-
     }
 }
